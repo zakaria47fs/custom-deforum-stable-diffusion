@@ -173,6 +173,11 @@ def load_model(root, load_on_run_all=True, check_sha256=True, map_location="cuda
             'url': 'https://huggingface.co/hakurei/waifu-diffusion-v1-3/resolve/main/wd-v1-3-float16.ckpt',
             'requires_login': False,
             },
+        "RevAnimated-v122.safetensors": {
+            #'sha256': 'bb725eaf2ed90092e68b892a1d6262f538131a7ec6a736e50ae534be6b5bd7b1',
+            'url': "https://huggingface.co/danbrown/RevAnimated-v1-2-2/resolve/main/rev-animated-v1-2-2.safetensors",
+            'requires_login': False,
+        },
     }
 
     # config path

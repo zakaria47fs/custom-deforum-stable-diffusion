@@ -28,7 +28,7 @@ from helpers.model_load import (
 from helpers.aesthetics import load_aesthetics_model
 
 
-MODEL_CACHE = "diffusion_models_cache"
+MODEL_CACHE = "models"
 
 
 class Predictor(BasePredictor):
@@ -50,16 +50,17 @@ class Predictor(BasePredictor):
         self,
         model_checkpoint: str = Input(
             choices=[
-                "v2-1_768-ema-pruned.ckpt",
-                "v2-1_512-ema-pruned.ckpt",
-                "768-v-ema.ckpt",
-                "512-base-ema.ckpt",
+                # "v2-1_768-ema-pruned.ckpt",
+                # "v2-1_512-ema-pruned.ckpt",
+                # "768-v-ema.ckpt",
+                # "512-base-ema.ckpt",
                 "Protogen_V2.2.ckpt",
-                "v1-5-pruned.ckpt",
-                "v1-5-pruned-emaonly.ckpt",
-                "sd-v1-4.ckpt",
-                "robo-diffusion-v1.ckpt",
-                "wd-v1-3-float16.ckpt",
+                # "v1-5-pruned.ckpt",
+                # "v1-5-pruned-emaonly.ckpt",
+                # "sd-v1-4.ckpt",
+                # "robo-diffusion-v1.ckpt",
+                # "wd-v1-3-float16.ckpt",
+                "RevAnimated-v122.safetensors"
             ],
             description="Choose stable diffusion model.",
             default="Protogen_V2.2.ckpt",
@@ -68,7 +69,7 @@ class Predictor(BasePredictor):
             description="Number of frames for animation", default=200
         ),
         animation_prompts: str = Input(
-            default="0: a beautiful apple, trending on Artstation | 50: a beautiful banana, trending on Artstation | 100: a beautiful coconut, trending on Artstation | 150: a beautiful durian, trending on Artstation",
+            default="20: masterpiece, Traveler taking photos with a camera, metropolis, kuala lumpur city skyline",
             description="Prompt for animation. Provide 'frame number : prompt at this frame', separate different prompts with '|'. Make sure the frame number does not exceed the max_frames.",
         ),
         width: int = Input(
@@ -166,6 +167,7 @@ class Predictor(BasePredictor):
         noise_schedule: str = Input(default="0: (0.02)"),
         strength_schedule: str = Input(default="0: (0.65)"),
         contrast_schedule: str = Input(default="0: (1.0)"),
+        strength: float = Input(default=0.8, ge=0.0, le=1.0, description="Choose strength factor, 0 for no init."), 
         hybrid_video_comp_alpha_schedule: str = Input(default="0:(1)"),
         hybrid_video_comp_mask_blend_alpha_schedule: str = Input(default="0:(0.5)"),
         hybrid_video_comp_mask_contrast_schedule: str = Input(default="0:(1)"),
@@ -244,6 +246,7 @@ class Predictor(BasePredictor):
         # sanity checks:
         if use_init:
             assert init_image, "Please provide init_image when use_init is set to True."
+            init_image = str(init_image)
         if use_mask:
             assert mask_file, "Please provide mask_file when use_mask is set to True."
 
@@ -324,7 +327,7 @@ class Predictor(BasePredictor):
             "grid_rows": 2,
             "outdir": "cog_temp_output",
             "use_init": use_init,
-            "strength": 0.1,
+            "strength": strength,
             "strength_0_no_init": True,
             "init_image": init_image,
             "use_mask": use_mask,
