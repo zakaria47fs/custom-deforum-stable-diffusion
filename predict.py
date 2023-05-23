@@ -35,7 +35,7 @@ class Predictor(BasePredictor):
     def setup(self):
         """Load the model into memory to make running multiple predictions efficient"""
         # Load the default model in setup()
-        self.default_ckpt = "Protogen_V2.2.ckpt"
+        self.default_ckpt = "RevAnimated-v122.safetensors"
         default_model_ckpt_config_path = "configs/v1-inference.yaml"
         default_model_ckpt_path = os.path.join(MODEL_CACHE, self.default_ckpt)
         local_config = OmegaConf.load(default_model_ckpt_config_path)
@@ -63,7 +63,7 @@ class Predictor(BasePredictor):
                 "RevAnimated-v122.safetensors"
             ],
             description="Choose stable diffusion model.",
-            default="Protogen_V2.2.ckpt",
+            default="RevAnimated-v122.safetensors",
         ),
         max_frames: int = Input(
             description="Number of frames for animation", default=600
