@@ -66,7 +66,7 @@ class Predictor(BasePredictor):
             default="Protogen_V2.2.ckpt",
         ),
         max_frames: int = Input(
-            description="Number of frames for animation", default=200
+            description="Number of frames for animation", default=600
         ),
         animation_prompts: str = Input(
             default="20: masterpiece, Traveler taking photos with a camera, metropolis, kuala lumpur city skyline",
@@ -75,21 +75,21 @@ class Predictor(BasePredictor):
         width: int = Input(
             description="Width of output video. Reduce if out of memory.",
             choices=[128, 256, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1024],
-            default=512,
+            default=704,
         ),
         height: int = Input(
             description="Height of output image. Reduce if out of memory.",
             choices=[128, 256, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1024],
-            default=512,
+            default=1024,
         ),
         num_inference_steps: int = Input(
-            description="Number of denoising steps", ge=1, le=500, default=50
+            description="Number of denoising steps", ge=1, le=500, default=25
         ),
         guidance_scale: float = Input(
             description="Scale for classifier-free guidance", ge=1, le=20, default=7
         ),
         sampler: str = Input(
-            default="euler_ancestral",
+            default="dpm2",
             choices=[
                 "klms",
                 "dpm2",
@@ -106,7 +106,7 @@ class Predictor(BasePredictor):
             ],
         ),
         seed: int = Input(
-            description="Random seed. Leave blank to randomize the seed", default=None
+            description="Random seed. Leave blank to randomize the seed", default=-1
         ),
         fps: int = Input(
             default=15, ge=10, le=60, description="Choose fps for the video."
@@ -117,7 +117,7 @@ class Predictor(BasePredictor):
             default="ViT-L/14",
         ),
         use_init: bool = Input(
-            default=False,
+            default=True,
             description="If not using init image, you can skip the next settings to setting the animation_mode.",
         ),
         init_image: Path = Input(
@@ -129,11 +129,11 @@ class Predictor(BasePredictor):
         ),
         invert_mask: bool = Input(default=False),
         animation_mode: str = Input(
-            default="2D",
+            default="3D",
             choices=["2D", "3D", "Video Input", "Interpolation"],
             description="Choose Animation mode. All parameters below are for setting up animations.",
         ),
-        border: str = Input(default="replicate", choices=["wrap", "replicate"]),
+        border: str = Input(default="wrap", choices=["wrap", "replicate"]),
         angle: str = Input(
             description="angle parameter for the motion", default="0:(0)"
         ),
@@ -142,30 +142,30 @@ class Predictor(BasePredictor):
         ),
         translation_x: str = Input(
             description="translation_x parameter for the 2D motion",
-            default="0:(10*sin(2*3.14*t/10))",
+            default="0:(0),30:(15),210:(15),300:(0)",
         ),
         translation_y: str = Input(
             description="translation_y parameter for the 2D motion", default="0:(0)"
         ),
         translation_z: str = Input(
-            description="translation_z parameter for the 2D motion", default="0:(10)"
+            description="translation_z parameter for the 2D motion", default="0:(0.2), 60:(10), 300:(15)"
         ),
         rotation_3d_x: str = Input(
-            description="rotation_3d_x parameter for the 3D motion", default="0:(0)"
+            description="rotation_3d_x parameter for the 3D motion", default="0:(0),60:(0),90:(0.5),180:(0.5),300:(0.5)"
         ),
         rotation_3d_y: str = Input(
-            description="rotation_3d_y parameter for the 3D motion", default="0:(0)"
+            description="rotation_3d_y parameter for the 3D motion", default="0:(0),30:(-3.5),90:(-2.5),180:(-2.8),300:(-2),420:(0)"
         ),
         rotation_3d_z: str = Input(
-            description="rotation_3d_z parameter for the 3D motion", default="0:(0)"
+            description="rotation_3d_z parameter for the 3D motion", default="0:(0), 60:(0.2),90:(0),180:(-0.5),300:(0),420:(0.5),500:(0.8)"
         ),
         flip_2d_perspective: bool = Input(default=False),
         perspective_flip_theta: str = Input(default="0:(0)"),
         perspective_flip_phi: str = Input(default="0:(t%15)"),
         perspective_flip_gamma: str = Input(default="0:(0)"),
         perspective_flip_fv: str = Input(default="0:(53)"),
-        noise_schedule: str = Input(default="0: (0.02)"),
-        strength_schedule: str = Input(default="0: (0.65)"),
+        noise_schedule: str = Input(default="0:(-0.06*(cos(3.141*t/15)**100)+0.06)"),
+        strength_schedule: str = Input(default="0:(0.65),25:(0.55)"),
         contrast_schedule: str = Input(default="0: (1.0)"),
         strength: float = Input(default=0.8, ge=0.0, le=1.0, description="Choose strength factor, 0 for no init."), 
         hybrid_video_comp_alpha_schedule: str = Input(default="0:(1)"),
@@ -179,7 +179,7 @@ class Predictor(BasePredictor):
         ),
         kernel_schedule: str = Input(default="0: (5)"),
         sigma_schedule: str = Input(default="0: (1.0)"),
-        amount_schedule: str = Input(default="0: (0.2)"),
+        amount_schedule: str = Input(default="0: (0.05)"),
         threshold_schedule: str = Input(default="0: (0.0)"),
         color_coherence: str = Input(
             choices=[
@@ -196,10 +196,10 @@ class Predictor(BasePredictor):
             default="1",
         ),
         use_depth_warping: bool = Input(default=True),
-        midas_weight: float = Input(default=0.3),
+        midas_weight: float = Input(default=0.2),
         near_plane: int = Input(default=200),
         far_plane: int = Input(default=10000),
-        fov: int = Input(default=40),
+        fov: int = Input(default=120),
         padding_mode: str = Input(
             choices=["border", "reflection", "zeros"],
             default="border",
