@@ -499,8 +499,8 @@ class Predictor(BasePredictor):
 
         # make video
         
-        if args_dict['use_init'] == True:
-            start_duration = args_dict['init_image_num_frames']//fps
+        if use_init:    #freeze init image for init_image_num_frames
+            start_duration = init_image_num_frames//fps
             cmd = ['ffmpeg','-y','-framerate',f'{fps}',
           '-pattern_type','sequence','-i',image_path,
           '-vf',
