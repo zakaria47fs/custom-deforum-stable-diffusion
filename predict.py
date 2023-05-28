@@ -123,6 +123,9 @@ class Predictor(BasePredictor):
         init_image: Path = Input(
             default=None, description="Provide init_image if use_init"
         ),
+        init_image_num_frames : int = Input(
+            default=0, description="Provide init_image_num_frames if use_init"
+        ),
         use_mask: bool = Input(default=False),
         mask_file: Path = Input(
             default=None, description="Provide mask_file if use_mask"
@@ -494,15 +497,21 @@ class Predictor(BasePredictor):
         mp4_path = f"/tmp/out.mp4"
 
         # make video
-        cmd = [
-            "ffmpeg",
+        
+        if args_dict['use_init'] == True:
+            start_duration = init_image_num_frames//fps
+            cmd = ['ffmpeg','-y','-framerate',f'{fps}',
+          '-pattern_type','sequence','-i',image_path,
+          '-vf',
+          f"tpad=start_duration={start_duration}:start_mode=clone",
+          '-pix_fmt','yuv420p',mp4_path]
+        else:
+            cmd = [ "ffmpeg",
             "-y",
             "-vcodec",
             "png",
             "-r",
             str(fps),
-            "-start_number",
-            str(0),
             "-i",
             image_path,
             "-frames:v",
