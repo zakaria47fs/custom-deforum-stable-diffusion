@@ -333,6 +333,7 @@ class Predictor(BasePredictor):
             "strength": strength,
             "strength_0_no_init": True,
             "init_image": init_image,
+            "init_image_num_frames":init_image_num_frames,
             "use_mask": use_mask,
             "use_alpha_as_mask": False,
             "mask_file": mask_file,
@@ -499,7 +500,7 @@ class Predictor(BasePredictor):
         # make video
         
         if args_dict['use_init'] == True:
-            start_duration = init_image_num_frames//fps
+            start_duration = args_dict['init_image_num_frames']//fps
             cmd = ['ffmpeg','-y','-framerate',f'{fps}',
           '-pattern_type','sequence','-i',image_path,
           '-vf',
